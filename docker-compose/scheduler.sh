@@ -1,0 +1,6 @@
+#!/bin/bash
+
+. /etc/profile
+
+/usr/local/bin/php /var/www/artisan schedule:run >> /var/www/storage/logs/cron.log 2>&1
+
