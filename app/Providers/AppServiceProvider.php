@@ -2,6 +2,18 @@
 
 namespace App\Providers;
 
+use App\Models\Banner;
+use App\Models\Category;
+use App\Models\InternalPage;
+use App\Models\LegalText;
+use App\Models\Section;
+use App\Models\Subcategory;
+use App\Observers\CategoryObserver;
+use App\Observers\Cms\BannerObserver;
+use App\Observers\Cms\InternalPageObserver;
+use App\Observers\Cms\LegalTextObserver;
+use App\Observers\Cms\SectionObserver;
+use App\Observers\SubcategoryObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +31,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Category::observe(CategoryObserver::class);
+        Subcategory::observe(SubcategoryObserver::class);
+
+        Section::observe(SectionObserver::class);
+        Banner::observe(BannerObserver::class);
+        InternalPage::observe(InternalPageObserver::class);
+        LegalText::observe(LegalTextObserver::class);
     }
 }
