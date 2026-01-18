@@ -33,6 +33,9 @@ class OrdersTable
                 TextColumn::make('fulfillment_type')
                     ->label(__('resources.orders.fields.fulfillment_type'))
                     ->badge()
+                    ->color(function (OrderFulfillmentType|string|null $state): string {
+                        return OrderFulfillmentType::tryFromMixed($state)?->color() ?? 'gray';
+                    })
                     ->formatStateUsing(function (OrderFulfillmentType|string|null $state): string {
                         return OrderFulfillmentType::tryFromMixed($state)?->label() ?? (string) $state;
                     })

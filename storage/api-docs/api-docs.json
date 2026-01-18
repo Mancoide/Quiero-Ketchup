@@ -812,6 +812,12 @@
                                         "type": "integer",
                                         "example": 1
                                     },
+                                    "fulfillment_type": {
+                                        "description": "Opcional. Tipo de entrega: delivery, pickup, dine_in",
+                                        "type": "string",
+                                        "example": "delivery",
+                                        "nullable": true
+                                    },
                                     "currency": {
                                         "description": "Opcional. Si no se envía se usa PYG (por migración) o se infiere si todos los productos comparten currency.",
                                         "type": "string",
@@ -1528,6 +1534,11 @@
                     "id": {
                         "type": "integer",
                         "example": 1
+                    },
+                    "fulfillment_type": {
+                        "description": "Tipo de entrega: delivery, pickup, dine_in",
+                        "type": "string",
+                        "example": "delivery"
                     },
                     "status": {
                         "type": "string",

@@ -13,6 +13,15 @@ enum OrderFulfillmentType: string
         return __('resources.orders.fulfillment_types.' . $this->value);
     }
 
+    public function color(): string
+    {
+        return match ($this) {
+            self::DELIVERY => 'primary',
+            self::PICKUP => 'info',
+            self::DINE_IN => 'warning',
+        };
+    }
+
     /**
      * @return array<string, string>
      */

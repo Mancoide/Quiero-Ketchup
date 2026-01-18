@@ -38,6 +38,12 @@ class OrdersRealtimeStats
         $fulfillmentValue = $fulfillment?->value
             ?? (string) $order->getRawOriginal('fulfillment_type');
 
+        $currency = (string) $order->currency;
+        $decimals = strtoupper($currency) === 'PYG' ? 0 : 2;
+        $totalLabel = number_format((float) $order->total_amount, $decimals, ',', '.');
+
+        $createdAtLabel = $order->created_at?->locale(app()->getLocale())->translatedFormat('M j, Y H:i:s');
+
         return [
             'id' => $order->id,
             'user' => (string) ($order->user?->name ?? '-'),
@@ -47,9 +53,12 @@ class OrdersRealtimeStats
             'status_color' => $status?->color() ?? 'gray',
             'fulfillment_type' => $fulfillmentValue,
             'fulfillment_label' => $fulfillment?->label() ?? $fulfillmentValue,
+            'fulfillment_color' => $fulfillment?->color() ?? 'gray',
             'total_amount' => (string) $order->total_amount,
+            'total_label' => $totalLabel,
             'currency' => (string) $order->currency,
             'created_at' => $order->created_at?->format('Y-m-d H:i') ?? null,
+            'created_at_label' => $createdAtLabel,
             'view_url' => OrderResource::getUrl('view', ['record' => $order]),
             'edit_url' => OrderResource::getUrl('edit', ['record' => $order]),
         ];
