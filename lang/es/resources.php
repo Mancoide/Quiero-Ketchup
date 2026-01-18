@@ -268,12 +268,18 @@ return [
             'id' => '#',
             'user' => 'Cliente',
             'restaurant' => 'Sucursal',
+            'fulfillment_type' => 'Tipo de entrega',
             'status' => 'Estado',
             'total_amount' => 'Total',
             'currency' => 'Moneda',
             'metadata' => 'Meta',
             'created_at' => 'Creado',
             'updated_at' => 'Actualizado',
+        ],
+        'fulfillment_types' => [
+            'delivery' => 'Delivery',
+            'pickup' => 'Retiro en el local',
+            'dine_in' => 'En el local',
         ],
         'statuses' => [
             'pending' => 'Pendiente',
@@ -282,6 +288,12 @@ return [
             'ready' => 'Lista',
             'completed' => 'Completada',
             'cancelled' => 'Cancelada',
+        ],
+        'realtime' => [
+            'new_orders' => 'Nuevos pedidos',
+            'helper' => 'Se insertan en tiempo real sin recargar.',
+            'clear' => 'Limpiar',
+            'view' => 'Ver',
         ],
         'helpers' => [
             'metadata' => 'Datos extra opcionales en formato clave/valor. Ejemplo: clave "tipo_entrega" valor "delivery" o clave "nota_cliente" valor "sin hielo".',

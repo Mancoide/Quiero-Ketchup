@@ -15,6 +15,7 @@ services:
         working_dir: /var/www/
         depends_on:
             - redis
+            - reverb
         volumes:
             - ./:/var/www
             - ./mnt/exe/Imagenes:/var/www/storage/images
@@ -76,6 +77,8 @@ services:
         container_name: "quiero-ketchup-nginx"
         hostname: "quiero-ketchup-nginx"
         restart: unless-stopped
+        depends_on:
+            - app
         ports:
             - "${DOCKER_HOST_PORT}:${DOCKER_CONTAINER_PORT}"
         volumes:
@@ -95,6 +98,19 @@ services:
             - redis:/data
         networks:
             - "ketchup-net"
+    reverb:
+        image: php:8.3-cli
+        container_name: laravel_reverb
+        working_dir: /var/www/
+        volumes:
+          - .:/var/www/
+        command: php artisan reverb:start --host=0.0.0.0 --port=8080
+        ports:
+          - "8080:8080"
+        depends_on:
+          - app
+        networks:
+          - "ketchup-net"
 
 volumes:
     redis:

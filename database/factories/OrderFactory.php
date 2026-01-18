@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\OrderStatus;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,7 +15,7 @@ class OrderFactory extends Factory
         return [
             'user_id' => null,
             'restaurant_id' => null,
-            'status' => 'pending',
+            'status' => OrderStatus::PENDING->value,
             'total_amount' => $this->faker->randomFloat(2, 5, 200),
             'currency' => 'PYG',
             'metadata' => [],

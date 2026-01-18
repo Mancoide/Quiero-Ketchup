@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\OrderFulfillmentType;
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,9 +12,11 @@ class Order extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'restaurant_id', 'status', 'total_amount', 'currency', 'metadata'];
+    protected $fillable = ['user_id', 'restaurant_id', 'fulfillment_type', 'status', 'total_amount', 'currency', 'metadata'];
 
     protected $casts = [
+        'fulfillment_type' => OrderFulfillmentType::class,
+        'status' => OrderStatus::class,
         'total_amount' => 'decimal:2',
         'metadata' => 'array',
     ];

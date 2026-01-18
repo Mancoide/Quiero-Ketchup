@@ -10,6 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *   schema="Order",
  *   type="object",
  *   @OA\Property(property="id", type="integer", example=1),
+ *   @OA\Property(property="fulfillment_type", type="string", example="delivery", description="Tipo de entrega: delivery, pickup, dine_in"),
  *   @OA\Property(property="status", type="string", example="pending"),
  *   @OA\Property(property="total_amount", type="number", format="float", example=31000),
  *   @OA\Property(property="currency", type="string", example="PYG"),
@@ -25,6 +26,7 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'fulfillment_type' => $this->fulfillment_type,
             'status' => $this->status,
             'total_amount' => $this->total_amount,
             'currency' => $this->currency,

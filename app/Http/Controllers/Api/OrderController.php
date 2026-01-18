@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\OrderFulfillmentType;
+use App\Enums\OrderStatus;
 use App\Enums\UserStatus;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
@@ -13,6 +15,7 @@ use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class OrderController extends ApiController
 {
@@ -135,6 +138,7 @@ class OrderController extends ApiController
      *     @OA\JsonContent(
      *       required={"restaurant_id","items"},
      *       @OA\Property(property="restaurant_id", type="integer", example=1),
+      *       @OA\Property(property="fulfillment_type", type="string", example="delivery", nullable=true, description="Opcional. Tipo de entrega: delivery, pickup, dine_in"),
         *       @OA\Property(property="currency", type="string", example="PYG", nullable=true, description="Opcional. Si no se envía se usa PYG (por migración) o se infiere si todos los productos comparten currency."),
         *       @OA\Property(property="metadata", type="object", nullable=true, description="Opcional"),
      *       @OA\Property(
@@ -187,6 +191,7 @@ class OrderController extends ApiController
 
         $validated = $request->validate([
             'restaurant_id' => ['required', 'integer', 'exists:restaurants,id'],
+            'fulfillment_type' => ['nullable', Rule::enum(OrderFulfillmentType::class)],
             'currency' => ['nullable', 'string', 'size:3'],
             'metadata' => ['nullable', 'array'],
             'items' => ['required', 'array', 'min:1'],
@@ -289,7 +294,8 @@ class OrderController extends ApiController
             $order = Order::create([
                 'user_id' => $user->id,
                 'restaurant_id' => $restaurant->id,
-                'status' => 'pending',
+                'fulfillment_type' => $validated['fulfillment_type'] ?? OrderFulfillmentType::DELIVERY->value,
+                'status' => OrderStatus::PENDING->value,
                 'total_amount' => 0,
                 'currency' => $currency,
                 'metadata' => $validated['metadata'] ?? null,
@@ -377,6 +383,7 @@ class OrderController extends ApiController
         });
 
         $order->load([
+            'user',
             'restaurant',
             'items.product',
             'items.options',

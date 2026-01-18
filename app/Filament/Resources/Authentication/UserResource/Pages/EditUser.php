@@ -39,7 +39,7 @@ class EditUser extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        if (filled($data['password'])) {
+        if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);

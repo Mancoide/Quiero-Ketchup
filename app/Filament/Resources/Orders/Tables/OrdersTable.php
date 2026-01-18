@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use App\Enums\OrderFulfillmentType;
+use App\Enums\OrderStatus;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -28,26 +30,22 @@ class OrdersTable
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('fulfillment_type')
+                    ->label(__('resources.orders.fields.fulfillment_type'))
+                    ->badge()
+                    ->formatStateUsing(function (OrderFulfillmentType|string|null $state): string {
+                        return OrderFulfillmentType::tryFromMixed($state)?->label() ?? (string) $state;
+                    })
+                    ->sortable(),
+
                 TextColumn::make('status')
                     ->label(__('resources.orders.fields.status'))
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'confirmed' => 'info',
-                        'preparing' => 'info',
-                        'ready' => 'primary',
-                        'completed' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'gray',
+                    ->color(function (OrderStatus|string|null $state): string {
+                        return OrderStatus::tryFromMixed($state)?->color() ?? 'gray';
                     })
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        'pending' => __('resources.orders.statuses.pending'),
-                        'confirmed' => __('resources.orders.statuses.confirmed'),
-                        'preparing' => __('resources.orders.statuses.preparing'),
-                        'ready' => __('resources.orders.statuses.ready'),
-                        'completed' => __('resources.orders.statuses.completed'),
-                        'cancelled' => __('resources.orders.statuses.cancelled'),
-                        default => (string) $state,
+                    ->formatStateUsing(function (OrderStatus|string|null $state): string {
+                        return OrderStatus::tryFromMixed($state)?->label() ?? (string) $state;
                     })
                     ->sortable(),
 
@@ -67,16 +65,14 @@ class OrdersTable
                     ->sortable(),
             ])
             ->filters([
+                SelectFilter::make('fulfillment_type')
+                    ->label(__('resources.orders.fields.fulfillment_type'))
+                    ->options(OrderFulfillmentType::options())
+                    ->native(false),
+
                 SelectFilter::make('status')
                     ->label(__('resources.orders.fields.status'))
-                    ->options([
-                        'pending' => __('resources.orders.statuses.pending'),
-                        'confirmed' => __('resources.orders.statuses.confirmed'),
-                        'preparing' => __('resources.orders.statuses.preparing'),
-                        'ready' => __('resources.orders.statuses.ready'),
-                        'completed' => __('resources.orders.statuses.completed'),
-                        'cancelled' => __('resources.orders.statuses.cancelled'),
-                    ])
+                    ->options(OrderStatus::options())
                     ->native(false),
 
                 SelectFilter::make('restaurant_id')
@@ -94,6 +90,8 @@ class OrdersTable
                 ViewAction::make(),
                 EditAction::make(),
             ])
+            ->paginationPageOptions([25, 50, 100])
+            ->defaultPaginationPageOption(100)
             ->defaultSort('created_at', 'desc');
     }
 }

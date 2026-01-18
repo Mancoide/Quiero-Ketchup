@@ -62,6 +62,10 @@ class AdminPanelProvider extends PanelProvider
                 'panels::body.start',
                 fn () => view('filament.hooks.login-styles')
             )
+            ->renderHook(
+                'panels::resource.pages.list-records.table.before',
+                fn () => view('filament.hooks.orders-realtime')
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
