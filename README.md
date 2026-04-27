@@ -1,59 +1,131 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Contabot
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Sistema Automatizado de Reconciliación Bancaria y Contabilidad**
 
-## About Laravel
+Contabot es una plataforma inteligente que automatiza la comparación entre extractos bancarios y archivos de conciliación de sistemas internos. Utiliza procesamiento de PDF con inteligencia artificial para extraer transacciones y realizar matching automático.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Características Principales
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- 📄 **Procesamiento de PDFs**: Extrae automáticamente transacciones de extractos bancarios
+- 📊 **Análisis de Hojas de Cálculo**: Soporta CSV y XLSX para archivos de conciliación
+- 🤖 **Matching Automático**: Algoritmo inteligente de matching basado en fecha, monto y descripción
+- 📈 **Reportes Detallados**: Genera reportes con transacciones coincididas y discrepancias
+- ⚡ **API REST**: Interfaz API completa para integración
+- 🐳 **Docker Ready**: Configuración Docker completa para desplegar fácilmente
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Stack Tecnológico
 
-## Learning Laravel
+- **Backend**: Laravel 12 + PHP 8.3
+- **Base de Datos**: PostgreSQL
+- **Caché**: Redis
+- **Procesamiento**: Python 3 (pdfplumber, pandas)
+- **Frontend**: Vue 3 + Tailwind CSS
+- **Contenedorización**: Docker & Docker Compose
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Requisitos Previos
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Docker & Docker Compose
+- Git
 
-## Laravel Sponsors
+## Instalación Rápida
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. Clonar el repositorio
+```bash
+git clone <tu-repo>
+cd contabot
+```
 
-### Premium Partners
+### 2. Configurar variables de entorno
+```bash
+cp .env.example .env
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 3. Levantar Docker
+```bash
+docker compose up -d
+```
 
-## Contributing
+### 4. Preparar la base de datos
+```bash
+docker compose exec app php artisan migrate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 5. Verificar que está funcionando
+```bash
+curl http://localhost:8000/api/health
+```
 
-## Code of Conduct
+## Uso de la API
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Subir Extracto Bancario
+```bash
+curl -X POST http://localhost:8000/api/files/upload-bank-statement \
+  -F "file=@extracto.pdf" \
+  -F "bank_name=Banco XYZ" \
+  -F "account_number=123456789"
+```
 
-## Security Vulnerabilities
+### Subir Archivo de Conciliación
+```bash
+curl -X POST http://localhost:8000/api/files/upload-reconciliation \
+  -F "file=@reconciliacion.csv" \
+  -F "file_type=internal_system_export"
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Procesar Reconciliación
+```bash
+curl -X POST http://localhost:8000/api/reconciliation/reconcile \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bank_statement_id": 1,
+    "reconciliation_file_id": 1
+  }'
+```
 
-## License
+### Obtener Resultado
+```bash
+curl http://localhost:8000/api/reconciliation/result/1
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Comandos Útiles
+
+### Entrar al contenedor
+```bash
+docker compose exec app bash
+```
+
+### Ver logs
+```bash
+docker compose logs -f app
+```
+
+### Limpiar Docker
+```bash
+docker compose down -v
+```
+
+## Algoritmo de Matching
+
+- **Fecha**: ±2 días = 30 puntos
+- **Monto**: Exacto = 50 puntos, ±5% = 30 puntos
+- **Descripción**: >70% similitud = 20 puntos
+
+Score mínimo: 75 puntos
+
+## Endpoints Disponibles
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/health` | Health check |
+| POST | `/api/files/upload-bank-statement` | Subir extracto |
+| POST | `/api/files/upload-reconciliation` | Subir reconciliación |
+| POST | `/api/reconciliation/reconcile` | Procesar |
+| GET | `/api/reconciliation/result/{id}` | Obtener resultado |
+
+## Licencia
+
+MIT License
+
+---
+
+**Contabot** - Automatizando la reconciliación bancaria ⚡

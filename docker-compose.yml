@@ -8,9 +8,9 @@ services:
                 gid: "${DOCKER_GID}"
             context: ./
             dockerfile: Dockerfile
-        image: "quiero-ketchup"
-        container_name: "quiero-ketchup"
-        hostname: "quiero-ketchup"
+        image: "contabot"
+        container_name: "contabot"
+        hostname: "contabot"
         restart: unless-stopped
         working_dir: /var/www/
         depends_on:
@@ -21,36 +21,36 @@ services:
             - ./mnt/exe/Imagenes:/var/www/storage/images
             - ./docker-compose/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
         networks:
-            - "ketchup-net"
+            - "contabot-net"
         environment:
             CONTAINER_ROLE: "${CONTAINER_ROLE}"
             DOCKER_USER: "${DOCKER_USER}"
 
     scheduler:
-        image: "quiero-ketchup"
-        container_name: "quiero-ketchup-scheduler"
-        hostname: "quiero-ketchup-scheduler"
+        image: "contabot"
+        container_name: "contabot-scheduler"
+        hostname: "contabot-scheduler"
         depends_on:
             - app
         volumes:
             - .:/var/www
         networks:
-            - "ketchup-net"
+            - "contabot-net"
         environment:
             CONTAINER_ROLE: scheduler
             DOCKER_USER: "${DOCKER_USER}"
 
     queue:
-        image: "quiero-ketchup"
-        container_name: "quiero-ketchup-queue"
-        hostname: "quiero-ketchup-queue"
+        image: "contabot"
+        container_name: "contabot-queue"
+        hostname: "contabot-queue"
         depends_on:
             - app
             - redis
         volumes:
             - ./:/var/www
         networks:
-            - "ketchup-net"
+            - "contabot-net"
         environment:
             CONTAINER_ROLE: queue
             DOCKER_USER: "${DOCKER_USER}"
@@ -58,8 +58,8 @@ services:
     db:
         image: postgres
         restart: always
-        container_name: "quiero-ketchup-pgdb"
-        hostname: "quiero-ketchup-pgdb"
+        container_name: "contabot-pgdb"
+        hostname: "contabot-pgdb"
         environment:
             POSTGRES_PASSWORD: "${DB_PASSWORD}"
             POSTGRES_USER: "${DB_USERNAME}"
@@ -70,12 +70,12 @@ services:
         ports:
             - "${DOCKER_HOST_DB_PORT}:${DOCKER_CONTAINER_DB_PORT}"
         networks:
-            - "ketchup-net"
+            - "contabot-net"
 
     nginx:
         image: nginx:alpine
-        container_name: "quiero-ketchup-nginx"
-        hostname: "quiero-ketchup-nginx"
+        container_name: "contabot-nginx"
+        hostname: "contabot-nginx"
         restart: unless-stopped
         depends_on:
             - app
@@ -86,18 +86,18 @@ services:
             - ./docker-compose/nginx/nginx.conf:/etc/nginx/nginx.conf
             - ./docker-compose/nginx/conf.d:/etc/nginx/conf.d
         networks:
-            - "ketchup-net"
+            - "contabot-net"
 
     redis:
-        container_name: "quiero-ketchup-redis"
-        hostname: "quiero-ketchup-redis"
+        container_name: "contabot-redis"
+        hostname: "contabot-redis"
         image: redis:alpine
         ports:
             - "${DOCKER_HOST_REDIS_PORT}:${DOCKER_CONTAINER_REDIS_PORT}"
         volumes:
             - redis:/data
         networks:
-            - "ketchup-net"
+            - "contabot-net"
     reverb:
         image: php:8.3-cli
         container_name: laravel_reverb
@@ -110,12 +110,12 @@ services:
         depends_on:
           - app
         networks:
-          - "ketchup-net"
+          - "contabot-net"
 
 volumes:
     redis:
         driver: "local"
 
 networks:
-    ketchup-net:
+    contabot-net:
         driver: bridge

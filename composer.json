@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "contabot/contabot",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Contabot - Sistema automatizado de conciliación bancaria y contabilidad",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {

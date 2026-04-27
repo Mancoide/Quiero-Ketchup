@@ -23,7 +23,10 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     cron \
     supervisor \
-    libaio-dev
+    libaio-dev \
+    python3 \
+    python3-pip \
+    python3-venv
 
 # nvm install dir and env variables
 RUN mkdir /usr/local/nvm
@@ -84,6 +87,12 @@ COPY . /var/www
 RUN chown -R www-data:www-data /var/www && \
     chmod 775 /var/www/storage && \
     chmod u+x /var/www/docker-compose/scheduler.sh
+
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r /var/www/requirements.txt
+
+# Make scripts executable
+RUN chmod +x /var/www/scripts/*.py
 
 # Use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
