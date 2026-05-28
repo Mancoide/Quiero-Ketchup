@@ -15,7 +15,7 @@ services:
         working_dir: /var/www/
         depends_on:
             - redis
-            - reverb
+            - db
         volumes:
             - ./:/var/www
             - ./mnt/exe/Imagenes:/var/www/storage/images
@@ -99,7 +99,7 @@ services:
         networks:
             - "contabot-net"
     reverb:
-        image: php:8.3-cli
+        image: "contabot"
         container_name: laravel_reverb
         working_dir: /var/www/
         volumes:
@@ -108,7 +108,7 @@ services:
         ports:
           - "8080:8080"
         depends_on:
-          - app
+          - redis
         networks:
           - "contabot-net"
 

@@ -38,6 +38,8 @@ def parse_spreadsheet(file_path):
         debit_col = find_column(df.columns, ['débito', 'debito', 'gasto', 'expense'])
         credit_col = find_column(df.columns, ['crédito', 'credito', 'ingreso', 'income'])
         ref_col = find_column(df.columns, ['referencia', 'reference', 'comprobante', 'receipt'])
+        balance_col = find_column(df.columns, ['saldo', 'balance'])
+        type_col = find_column(df.columns, ['tipo', 'type'])
         
         for idx, row in df.iterrows():
             try:
@@ -53,12 +55,14 @@ def parse_spreadsheet(file_path):
                 tx_type = 'debit'
                 
                 if amount_col and pd.notna(row[amount_col]):
-                    amount = float(str(row[amount_col]).replace(',', '.').replace('$', ''))
+                    amount = parse_amount(row[amount_col])
+                    if type_col and pd.notna(row[type_col]):
+                        tx_type = str(row[type_col]).strip().lower()
                 elif debit_col and pd.notna(row[debit_col]):
-                    amount = float(str(row[debit_col]).replace(',', '.').replace('$', ''))
+                    amount = parse_amount(row[debit_col])
                     tx_type = 'debit'
                 elif credit_col and pd.notna(row[credit_col]):
-                    amount = float(str(row[credit_col]).replace(',', '.').replace('$', ''))
+                    amount = parse_amount(row[credit_col])
                     tx_type = 'credit'
                 
                 if amount == 0:
@@ -81,6 +85,9 @@ def parse_spreadsheet(file_path):
                     'amount': amount,
                     'type': tx_type,
                 }
+
+                if balance_col and pd.notna(row[balance_col]):
+                    transaction['balance'] = parse_amount(row[balance_col])
                 
                 transactions.append(transaction)
                 
@@ -92,6 +99,29 @@ def parse_spreadsheet(file_path):
         return []
     
     return transactions
+
+
+def parse_amount(value):
+    if value is None or pd.isna(value):
+        return 0.0
+
+    if isinstance(value, (int, float)):
+        return float(value)
+
+    text = str(value).strip().replace('Gs.', '').replace('$', '').replace(' ', '')
+    if not text:
+        return 0.0
+
+    if ',' in text and '.' in text:
+        text = text.replace('.', '').replace(',', '.')
+    elif text.count('.') > 1:
+        text = text.replace('.', '')
+    elif '.' in text and len(text.rsplit('.', 1)[1]) == 3:
+        text = text.replace('.', '')
+    elif ',' in text:
+        text = text.replace(',', '.')
+
+    return float(text)
 
 
 def find_column(columns, keywords):

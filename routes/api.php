@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
-        'service' => 'Contabot API',
+        'service' => 'Sistema de Conciliacion API',
         'version' => '1.0.0',
         'timestamp' => now(),
     ]);

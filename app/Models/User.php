@@ -5,6 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserStatus;
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,7 +17,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable implements FilamentUser, HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasApiTokens, Notifiable, HasRoles, HasPanelShield, InteractsWithMedia;
@@ -132,5 +134,40 @@ class User extends Authenticatable implements HasMedia
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
+    }
+
+    public function reconciliations(): HasMany
+    {
+        return $this->hasMany(Reconciliation::class);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->status === UserStatus::ACTIVE;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole((string) config('filament-shield.super_admin.name', 'super_admin'));
+    }
+
+    public function isSubdirectora(): bool
+    {
+        return $this->hasRole('subdirectora');
+    }
+
+    public function isContabilidad(): bool
+    {
+        return $this->hasRole('contabilidad');
+    }
+
+    public function canAccessStandardReconciliations(): bool
+    {
+        return $this->isSuperAdmin() || $this->isContabilidad();
+    }
+
+    public function canAccessCampuzanoReconciliations(): bool
+    {
+        return $this->isSuperAdmin() || $this->isSubdirectora();
     }
 }

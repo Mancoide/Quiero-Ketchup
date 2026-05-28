@@ -88,8 +88,8 @@ RUN chown -R www-data:www-data /var/www && \
     chmod 775 /var/www/storage && \
     chmod u+x /var/www/docker-compose/scheduler.sh
 
-# Install Python dependencies
-RUN pip3 install --no-cache-dir -r /var/www/requirements.txt
+# Allow pip installs in the container image despite Debian's externally managed Python policy.
+RUN pip3 install --no-cache-dir --break-system-packages -r /var/www/requirements.txt
 
 # Make scripts executable
 RUN chmod +x /var/www/scripts/*.py
@@ -101,4 +101,3 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY ./docker-compose/php/custom.ini "$PHP_INI_DIR/conf.d/custom.ini"
 
 CMD ["/usr/local/bin/start"]
-

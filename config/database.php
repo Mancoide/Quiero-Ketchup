@@ -2,6 +2,24 @@
 
 use Illuminate\Support\Str;
 
+$runningInDocker = is_file('/.dockerenv');
+
+$pgsqlHost = $runningInDocker
+    ? env('DB_HOST', '127.0.0.1')
+    : env('DB_HOST_EXTERNAL', '127.0.0.1');
+
+$pgsqlPort = $runningInDocker
+    ? env('DB_PORT', '5432')
+    : env('DB_PORT_EXTERNAL', env('DOCKER_HOST_DB_PORT', '5432'));
+
+$redisHost = $runningInDocker
+    ? env('REDIS_HOST', '127.0.0.1')
+    : env('REDIS_HOST_EXTERNAL', '127.0.0.1');
+
+$redisPort = $runningInDocker
+    ? env('REDIS_PORT', '6379')
+    : env('REDIS_PORT_EXTERNAL', env('DOCKER_HOST_REDIS_PORT', '6379'));
+
 return [
 
     /*
@@ -86,8 +104,8 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
+            'host' => $pgsqlHost,
+            'port' => $pgsqlPort,
             'database' => env('DB_DATABASE', 'laravel'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
@@ -154,10 +172,10 @@ return [
 
         'default' => [
             'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'host' => $redisHost,
             'username' => env('REDIS_USERNAME'),
             'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', '6379'),
+            'port' => $redisPort,
             'database' => env('REDIS_DB', '0'),
             'max_retries' => env('REDIS_MAX_RETRIES', 3),
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
@@ -167,10 +185,10 @@ return [
 
         'cache' => [
             'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'host' => $redisHost,
             'username' => env('REDIS_USERNAME'),
             'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', '6379'),
+            'port' => $redisPort,
             'database' => env('REDIS_CACHE_DB', '1'),
             'max_retries' => env('REDIS_MAX_RETRIES', 3),
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
